@@ -3,6 +3,7 @@
 use bevy::prelude::*;
 
 const PLAYER_SPRITE: &str = "player_a_01.png";
+const TIME_STEP: f32 = 1. / 60.;
 
 // Resources
 pub struct Materials {
@@ -12,6 +13,15 @@ pub struct Materials {
 struct WinSize {
     w: f32,
     h: f32,
+}
+
+// Components
+struct Player;
+struct PlayerSpeed(f32);
+impl Default for PlayerSpeed {
+    fn default() -> Self {
+        Self(500.)
+    }
 }
 
 // Systems
@@ -31,7 +41,25 @@ fn player_spawn(
                 ..Default::default()
             },
             ..Default::default()
-        });
+        })
+        .insert(Player)
+        .insert(PlayerSpeed::default());
+}
+
+fn player_movement(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut query: Query<(&PlayerSpeed, &mut Transform), With<Player>>
+) {
+    if let Ok((speed, mut transform)) = query.single_mut() {
+        let dir = if keyboard_input.pressed(KeyCode::Left) {
+            -1.
+        } else if keyboard_input.pressed(KeyCode::Right) {
+            1.
+        } else {
+            0.
+        };
+        transform.translation.x += dir * speed.0 * TIME_STEP;
+    }
 }
 
 fn setup(
@@ -71,5 +99,6 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup.system())
         .add_startup_stage("game_setup_actors", SystemStage::single(player_spawn.system()))
+        .add_system(player_movement.system())
         .run();
 }
