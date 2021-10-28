@@ -6,6 +6,7 @@ const PLAYER_SPRITE: &str = "player_a_01.png";
 
 fn setup(
     mut commands: Commands,
+    asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut windows: ResMut<Windows>
 ) {
@@ -17,10 +18,15 @@ fn setup(
     window.set_position(IVec2::new(3870, 4830));
 
     // spawn sprite
+    let bottom = - window.height() / 2.;
     commands
         .spawn_bundle(SpriteBundle {
-            material: materials.add(Color::rgb(1., 0.7, 0.7).into()),
-            sprite: Sprite::new(Vec2::new(200.0, 100.0)),
+            material: materials.add(asset_server.load(PLAYER_SPRITE).into()),
+            transform: Transform {
+                translation: Vec3::new(0., bottom + 75. / 4. + 5., 10.),
+                scale: Vec3::new(0.5, 0.5, 1.),
+                ..Default::default()
+            },
             ..Default::default()
         });
 }
