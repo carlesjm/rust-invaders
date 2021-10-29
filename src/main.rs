@@ -85,7 +85,22 @@ fn player_fire(
                 ..Default::default()
             })
             .insert(Laser)
-            .insert(Speed);
+            .insert(Speed::default());
+        }
+    }
+}
+
+fn laser_movement(
+    mut commands: Commands,
+    win_size: Res<WinSize>,
+    mut query: Query<(Entity, &Speed, &mut Transform), With<Laser>>
+) {
+    for (laser_entity, speed, mut laser_transform) in query.iter_mut() {
+        let translation = &mut laser_transform.translation;
+        translation.y += speed.0 * TIME_STEP;
+
+        if translation.y > win_size.h {
+            commands.entity(laser_entity).despawn();
         }
     }
 }
@@ -127,8 +142,12 @@ fn main() {
         })
         .add_plugins(DefaultPlugins)
         .add_startup_system(setup.system())
-        .add_startup_stage("game_setup_actors", SystemStage::single(player_spawn.system()))
+        .add_startup_stage(
+            "game_setup_actors",
+            SystemStage::single(player_spawn.system())
+        )
         .add_system(player_movement.system())
         .add_system(player_fire.system())
+        .add_system(laser_movement.system())
         .run();
 }
