@@ -19,6 +19,7 @@ struct WinSize {
 
 // Components
 struct Player;
+struct PlayerReadyFire(bool);
 struct Laser;
 struct Speed(f32);
 impl Default for Speed {
@@ -46,6 +47,7 @@ fn player_spawn(
             ..Default::default()
         })
         .insert(Player)
+        .insert(PlayerReadyFire(true))
         .insert(Speed::default());
 }
 
@@ -69,23 +71,29 @@ fn player_fire(
     mut commands: Commands,
     keyboard_input: Res<Input<KeyCode>>,
     mut materials: Res<Materials>,
-    query: Query<(&Transform), With<Player>>
+    mut query: Query<(&Transform, &mut PlayerReadyFire), With<Player>>
 ) {
-    if let Ok((player_transform)) = query.single() {
-        if keyboard_input.pressed(KeyCode::Space) {
+    if let Ok((player_transform, mut ready_fire)) = query.single_mut() {
+        if ready_fire.0 && keyboard_input.pressed(KeyCode::Space) {
             let x = player_transform.translation.x;
             let y = player_transform.translation.y;
 
             commands.spawn_bundle(SpriteBundle {
                 material: materials.laser_materials.clone(),
                 transform: Transform {
-                    translation: Vec3::new(x, y, 0.),
+                    translation: Vec3::new(x, y + 15., 0.),
                     ..Default::default()
                 },
                 ..Default::default()
             })
             .insert(Laser)
             .insert(Speed::default());
+
+            ready_fire.0 = false;
+        }
+
+        if keyboard_input.just_released(KeyCode::Space) {
+            ready_fire.0 = true;
         }
     }
 }
