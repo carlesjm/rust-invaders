@@ -26,7 +26,7 @@ fn player_spawn(
     let bottom = - win_size.h / 2.;
     commands
         .spawn_bundle(SpriteBundle {
-            material: materials.player_materials.clone(),
+            material: materials.player.clone(),
             transform: Transform {
                 translation: Vec3::new(0., bottom + 75. / 4. + 5., 10.),
                 scale: Vec3::new(0.5, 0.5, 1.),
@@ -68,7 +68,7 @@ fn player_fire(
 
             let mut spawn_lasers = |x_offset: f32| {
                 commands.spawn_bundle(SpriteBundle {
-                    material: materials.laser_materials.clone(),
+                    material: materials.laser.clone(),
                     transform: Transform {
                         translation: Vec3::new(x + x_offset, y + 15., 0.),
                         scale: Vec3::new(SCALE, SCALE, 1.),

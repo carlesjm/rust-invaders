@@ -32,7 +32,7 @@ fn enemy_spawn(
         // enemy spawn
         commands
             .spawn_bundle(SpriteBundle {
-                material: materials.enemy_materials.clone(),
+                material: materials.enemy.clone(),
                 transform: Transform {
                     translation: Vec3::new(x, y, 10.0),
                     scale: Vec3::new(SCALE, SCALE, 1.0),
