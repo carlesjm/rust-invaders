@@ -1,13 +1,14 @@
 use bevy::{core::FixedTimestep, prelude::*};
 use rand::{Rng, thread_rng};
 
-use crate::{ActiveEnemies, Enemy, FromEnemy, Laser, Materials, SCALE, Speed, WinSize};
+use crate::{ActiveEnemies, Enemy, FromEnemy, Laser, Materials, SCALE, Speed, TIME_STEP, WinSize};
 
 pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut AppBuilder) {
         app
+            .add_system(enemy_laser_movement.system())
             .add_system_set(
                 SystemSet::new()
                     .with_run_criteria(FixedTimestep::step(1.0))
@@ -74,5 +75,20 @@ fn enemy_fire(
             .insert(Laser)
             .insert(FromEnemy)
             .insert(Speed::default());
+    }
+}
+
+fn enemy_laser_movement(
+    mut commands: Commands,
+    win_size: Res<WinSize>,
+    mut query: Query<(Entity, &Speed, &mut Transform), (With<Laser>, With<FromEnemy>)>
+) {
+    for (laser_entity, speed, mut laser_transform) in query.iter_mut() {
+        let translation = &mut laser_transform.translation;
+        translation.y -= speed.0 * TIME_STEP;
+
+        if translation.y < -win_size.h / 2.0 - 50.0 {
+            commands.entity(laser_entity).despawn();
+        }
     }
 }

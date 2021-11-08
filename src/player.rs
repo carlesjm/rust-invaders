@@ -13,7 +13,7 @@ impl Plugin for PlayerPlugin {
             )
             .add_system(player_movement.system())
             .add_system(player_fire.system())
-            .add_system(laser_movement.system());
+            .add_system(player_laser_movement.system());
     }
 }
 
@@ -94,7 +94,7 @@ fn player_fire(
     }
 }
 
-fn laser_movement(
+fn player_laser_movement(
     mut commands: Commands,
     win_size: Res<WinSize>,
     mut query: Query<(Entity, &Speed, &mut Transform), (With<Laser>, With<FromPlayer>)>
