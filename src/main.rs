@@ -17,6 +17,7 @@ const EXPLOSION_SHEET: &str = "explo_a_sheet.png";
 const TIME_STEP: f32 = 1. / 60.;
 const SCALE: f32 = 0.5;
 const PLAYER_RESPAWN_DELAY: f64 = 2.0;
+const MAX_ENEMIES: u32 = 1;
 
 // Resources
 pub struct Materials {
